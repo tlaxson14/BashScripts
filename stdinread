@@ -1,0 +1,5 @@
+#!/bin/bash
+# This simple program shows that data can be read in from stdin
+# for use within a program, if no arg given to the cat command.
+cat > "tempfile"
+cat tempfile
