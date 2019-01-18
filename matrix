@@ -1,0 +1,41 @@
+#!/bin/bash
+# Name: Travis Laxson
+# Date: Jan. 18 2019
+# Description: This shell script computes matrix operations 
+# including printing the dimensions, matrix transpositions,
+# mean vector calculation, addition of two matrices, and
+# multiplication of two matrices. 
+
+datafilepath="datafile$$"
+if [ "$#" = "1" ]
+then
+	cat > "$datafilepath"
+elif [ "$#" = "2" ]
+then
+	datafilepath=$2
+fi
+
+dims() {	
+	rows=0
+	while read myLine
+	do
+		rows=$(( rows + 1 ))
+		cols=0
+		
+		for i in $myLine
+		do
+			cols=$(( cols + 1 ))	#Update column count
+		done
+	done < $datafilepath			#stdin from arg1 (or piping stdout file)
+	echo "$rows $cols"			#Display rows and cols 
+}
+
+if [ $# -gt 2 ] || [ ! -f $datafilepath ]
+then
+	echo "$@" >&2
+	exit 1 
+else
+	dims $datafilepath
+	exit 0
+fi
+
