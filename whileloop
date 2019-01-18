@@ -1,0 +1,9 @@
+#!/bin/bash
+# This bash script shows how to use a while loop to sum numbers together.
+i=0
+while [ $i -ne 5 ]
+do
+	printf "i = $i, not stopping yet\n"
+	i=$(expr $i + 1)
+done
+printf "Stopping, i = $i\n"
