@@ -7,7 +7,7 @@
 # multiplication of two matrices. 
 
 datafilepath="datafile$$"
-trap "rm -f $datafilepath" EXIT		# Remove data file after dims function executes 
+trap "rm -f $datafilepath" EXIT INT HUP TERM 	# Remove data file after dims function executes 
 
 #if [ "$#" = "0" ]
 #then
@@ -16,6 +16,7 @@ trap "rm -f $datafilepath" EXIT		# Remove data file after dims function executes
 #then
 #	datafilepath=$1
 #fi
+
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -26,7 +27,7 @@ dims() {
 	do
 		rows=$(( rows + 1 ))		# Update row count
 		cols=0				# Initialize columns 	
-		for each in $numberLine	# Iterate over each value per row
+		for i in $numberLine	# Iterate over each value per row
 		do
 			cols=$(( cols + 1 ))	# Update column count
 		done
@@ -36,11 +37,12 @@ dims() {
 
 if [ "$#" = "1" ]
 then
-	cat > "$datafilepath"		
+	cat > $datafilepath			#read in stdin to data file
 elif [ "$#" = "2" ]
 then
-	datafilepath=$2
+	datafilepath=$2				
 fi
+	
 
 # If number of args is greater than 2 or the file doesn't exist
 # print error message to stderr, nothing to stdout and return 1
@@ -48,20 +50,19 @@ fi
 if [ $# -gt 2 ] || [ $# -lt 1 ]
 then
 	echo "Error: Improper argument count" 1>&2
-#	echo "Arg count: $#"
 	exit 1
 fi
 
 if [ ! -f $datafilepath ]
 then
 	echo "Error: File $datafilepath does not exist." 1>&2
-#	echo "Arg count: $#"
 	exit 1
 fi
 
-if [ $# -eq 1 ] || [ $# -eq 2 ]
-then
-	dims $datafilepath	
-	exit 0
-fi
+#if [ $# -eq 1 ] || [ $# -eq 2 ]
+#then
+#	dims $datafilepath	
+#	exit 0
+#fi
 
+$1 "${@:2}"
