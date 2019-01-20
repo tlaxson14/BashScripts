@@ -7,16 +7,8 @@
 # multiplication of two matrices. 
 
 datafilepath="datafile$$"
-trap "rm -f $datafilepath" EXIT INT HUP TERM 	# Remove data file after dims function executes 
-
-#if [ "$#" = "0" ]
-#then
-#	cat > "$datafilepath"		
-#elif [ "$#" = "1" ]
-#then
-#	datafilepath=$1
-#fi
-
+tempCol="tempcolfile$$"
+trap "rm -f $datafilepath $tempCol" EXIT INT HUP TERM 	# Remove data file after dims function executes 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -45,56 +37,23 @@ fi
 
 
 transpose() {
-	tempCol="tmpcolfile$$"
-#	tempRow="tmprowfile$$"
 	i=0
 	#Make input row file
 	while read numberLine
 	do
-	#	echo "Line numbers: $numberLine"
-		#i=1
-	#	lincount=$(wc -l < $datafilepath)
-	#	wordcount=$(wc -w < $datafilepath)
-	#	newcount=$(( wordcount / lincount ))
-	#	echo "lines in file = $lincount"
-	#	echo "words in file = $wordcount"
-		#for i in $numberLine
-		#i=0
 		colscount=0
 		for each in $numberLine 
 		do			
 			colscount=$(( colscount + 1 ))
 		done
-		#echo "Column count: $colscount"
 		
 		while [[ $i -lt $colscount ]]
 		do
 			(( i++ ))	
-#			echo "i = $i"
 			col=$(cut -f $i $datafilepath | tr '\n' '\t')
-			#echo "hello : $col"
 			echo "${col%?}" >> $tempCol
-			#(( i++ ))
-			#echo "$col"
 		done
-
-		#cat < $tempCol
-
-	#Append each number onto the end of a temp col file by cutting specific cols
-	#cut -c 1 $inputFile > $tempCol
-	#cut -c 3 $inputFile >> $tempCol
-	#cut -c 5 $inputFile >> $tempCol
-	#cut -c 7 $inputFile >> $tempCol
-	#cut -c 9 $inputFile >> $tempCol
-	#echo "Status code: $?"
-
-#	cat $tempCol | tr '\n' '\t' >> "$tempRow$$"
-
-#	echo >> "$tempRow$$"
-
 	done < $datafilepath
-
-	
 	cat < $tempCol
 }
 
@@ -115,12 +74,6 @@ then
 	echo "Error: File $datafilepath does not exist." 1>&2
 	exit 1
 fi
-
-#if [ $# -eq 1 ] || [ $# -eq 2 ]
-#then
-#	dims $datafilepath	
-#	exit 0
-#fi
 
 $1 "${@:2}"
 
