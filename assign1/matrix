@@ -8,7 +8,9 @@
 
 datafilepath="datafile$$"
 tempCol="tempcolfile$$"
-trap "rm -f $datafilepath $tempCol" EXIT INT HUP TERM 	# Remove data file after dims function executes 
+tempRow="temprowfile$$"
+tempfile="tempsumfile$$"
+trap "rm -f $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -57,7 +59,53 @@ transpose() {
 	cat < $tempCol
 }
 
+mean() {
+	i=0
+	#Make input row file
+	while read numberLine
+	do
+		colscount=0
+		for each in $numberLine 
+		do			
+			#echo "Num=$each"
+			colscount=$(( colscount + 1 ))
+		done
+		colscount=$(( colscount * 2))
+		#echo "colcount=$colscount"
+	
+		while [[ $i -lt $colscount ]]
+		do
+			(( i++ ))
+			#echo "i=$i"
+			out=$(( i % 2 ))
+			if [[ $out -eq 0 ]]
+			then
+				:
+			else
+				sum=0
+				col=$(cut -c $i $datafilepath) #| tr '\n' '\t')
+				#echo "$col"
+				echo "$col" > $tempCol
+	
+				while read num
+				do
+					lincount=$( wc -l < $tempCol)
+					sum=$(( sum + num ))
+					avg=$(( ($sum + ($lincount/2) * (($sum>0)*2-1)) / $lincount ))
+				done < $tempCol
+				
+				#echo "avg=$avg"
+				echo "$avg" >> $tempRow
+				display=$(cat $tempRow | tr '\n' '\t')
+			fi
+#		(( i++ ))
+		done
+	done < $datafilepath
+	echo "${display%?}" >> $tempfile
+	cat < $tempfile
+	#echo "${display%?}"
 
+}
 	
 
 # If number of args is greater than 2 or the file doesn't exist
