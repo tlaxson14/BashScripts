@@ -10,6 +10,7 @@ datafilepath="datafile$$"
 tempCol="tempcolfile$$"
 tempRow="temprowfile$$"
 tempfile="tempsumfile$$"
+avgfile=$"tempavgfile$$"
 trap "rm -f $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
@@ -60,52 +61,105 @@ transpose() {
 }
 
 mean() {
-	i=0
-	#Make input row file
-	while read numberLine
-	do
-		colscount=0
-		for each in $numberLine 
-		do			
-			#echo "Num=$each"
-			colscount=$(( colscount + 1 ))
-		done
-		colscount=$(( colscount * 2))
-		#echo "colcount=$colscount"
+	#Get the number of columns
+	numcount=$( wc -w < $datafilepath)
+	#echo "Number of nos.= $numcount"
+	lincount=$( wc -l < $datafilepath)
+	#echo "Number of lines= $lincount"
+	colcount=$(( numcount / lincount))
+	#echo "Number of cols= $colcount"
+
+	#initialize counter var
+	i=1
+
+	while [[ $i -le $colcount ]]
+	do 
 	
-		while [[ $i -lt $colscount ]]
+		#initialize sum & avg for each column
+		sum=0
+		avg=0
+	
+		#cut columns and store into tempfile
+		cutcol=$(cut -f $i $datafilepath)
+		echo "$cutcol" > $tempCol
+		#cat $tempCol
+
+		#Read each numebr from the tempCol file and calculate sum
+		while read number
 		do
-			(( i++ ))
-			#echo "i=$i"
-			out=$(( i % 2 ))
-			if [[ $out -eq 0 ]]
-			then
-				:
-			else
-				sum=0
-				col=$(cut -c $i $datafilepath) #| tr '\n' '\t')
-				#echo "$col"
-				echo "$col" > $tempCol
-	
-				while read num
-				do
-					lincount=$( wc -l < $tempCol)
-					sum=$(( sum + num ))
-					avg=$(( ($sum + ($lincount/2) * (($sum>0)*2-1)) / $lincount ))
-				done < $tempCol
-				
-				#echo "avg=$avg"
-				echo "$avg" >> $tempRow
-				display=$(cat $tempRow | tr '\n' '\t')
-			fi
-#		(( i++ ))
-		done
-	done < $datafilepath
-	echo "${display%?}" >> $tempfile
-	cat < $tempfile
-	#echo "${display%?}"
+			sum=$(( sum + number )) 
+		#	echo "Sum=$sum"
+		done < $tempCol
+
+		#Calculate float average
+		avg=$(( ($sum + ($lincount/2) * (($sum>0)*2-1)) / $lincount ))
+		#echo "Avg=$avg"
+		
+		#Append avg to avgfile 
+		echo "$avg" >> $avgfile
+
+		#Tranform avgfile from cols to rows (replace all newlines with tabs)
+		display=$(cat $avgfile | tr '\n' '\t')
+
+		#Overwrite avgfile with transformed display minus last tab
+		echo "${display%?}" > $avgfile
+
+	#Increment i value
+	(( i++ ))
+
+	done
+
+	#Display avgfile to terminal
+	cat $avgfile	
 
 }
+
+#	i=0
+	#Make input row file
+#	while read numberLine
+#	do
+#		colscount=0
+#		for each in $numberLine 
+#		do			
+			#echo "Num=$each"
+#			colscount=$(( colscount + 1 ))
+#		done
+#		colscount=$(( colscount * 2))
+		#echo "colcount=$colscount"
+	
+#		while [[ $i -lt $colscount ]]
+#		do
+#			(( i++ ))
+			#echo "i=$i"
+#			out=$(( i % 2 ))
+#			if [[ $out -eq 0 ]]
+#			then
+				:
+#			else
+#				sum=0
+#				col=$(cut -c $i $datafilepath) #| tr '\n' '\t')
+				#echo "$col"
+#				echo "$col" > $tempCol
+	
+#				while read num
+#				do
+#					lincount=$( wc -l < $tempCol)
+#					sum=$(( sum + num ))
+#					avg=$(( ($sum + ($lincount/2) * (($sum>0)*2-1)) / $lincount ))
+#				done < $tempCol
+				
+				#echo "avg=$avg"
+#				echo "$avg" >> $tempRow
+#				display=$(cat $tempRow | tr '\n' '\t')
+#			fi
+#		(( i++ ))
+#		done
+#	done < $datafilepath
+#	echo "${display%?}" >> $tempfile
+#	cat < $tempfile
+	#echo "${display%?}"
+
+#}
 	
 
 # If number of args is greater than 2 or the file doesn't exist
