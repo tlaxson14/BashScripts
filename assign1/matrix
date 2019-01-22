@@ -11,7 +11,7 @@ tempCol="tempcolfile$$"
 tempRow="temprowfile$$"
 tempfile="tempsumfile$$"
 avgfile=$"tempavgfile$$"
-trap "rm -f $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
+trap "rm -f $datafilepath $tempCol $tempRow $tempfile $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -30,13 +30,9 @@ dims() {
 	echo "$rows $cols"			# Display rows and cols
 }
 
-if [ "$#" = "1" ]
-then
-	cat > $datafilepath			#read in stdin to data file
-elif [ "$#" = "2" ]
-then
-	datafilepath=$2				
-fi
+
+
+
 
 
 transpose() {
@@ -59,6 +55,12 @@ transpose() {
 	done < $datafilepath
 	cat < $tempCol
 }
+
+
+
+
+
+
 
 mean() {
 	#Get the number of columns
@@ -161,6 +163,14 @@ mean() {
 
 #}
 	
+if [ "$#" = "1" ]
+then
+	cat > $datafilepath			#read in stdin to data file
+elif [ "$#" = "2" ]
+then
+	datafilepath=$2				
+fi
+
 
 # If number of args is greater than 2 or the file doesn't exist
 # print error message to stderr, nothing to stdout and return 1
