@@ -11,34 +11,22 @@ tempCol="tempcolfile$$"
 tempRow="temprowfile$$"
 tempfile="tempsumfile$$"
 avgfile=$"tempavgfile$$"
-trap "rm -f $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
+trap "rm -f $datafilepath $tempCol $tempRow $tempfile $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
 # of columns (e.g. For a 5x6 matrix stdout will show '5 6')
-dims() {	
-	rows=0
-	while read numberLine 
-	do
-		rows=$(( rows + 1 ))		# Update row count
-		cols=0				# Initialize columns 	
-		for i in $numberLine	# Iterate over each value per row
-		do
-			cols=$(( cols + 1 ))	# Update column count
-		done
-	done < $datafilepath			# Stdin from arg1 (or piping stdout file)
+dims() {
+	rows=$(wc -l < $datafilepath)		# Get number of rows
+	numcount=$(wc -w < $datafilepath)	# Get total number count
+	cols=$(( numcount / rows ))		# Calculate number of columns
 	echo "$rows $cols"			# Display rows and cols
 }
 
-if [ "$#" = "1" ]
-then
-	cat > $datafilepath			#read in stdin to data file
-elif [ "$#" = "2" ]
-then
-	datafilepath=$2				
-fi
 
-
+# Transpose function: Reflects the elements of the matrix 
+# along the main diagonal. (Eg. An MxN matrix becomes NxM)
+# Values along the main diagonal will remain unchanged.
 transpose() {
 	i=0
 	#Make input row file
@@ -60,6 +48,9 @@ transpose() {
 	cat < $tempCol
 }
 
+# Mean function: Takes an MxN matrix input and returns an 1xN
+# row vector where the first element is the mean of column 1
+# and the second element is the mean of column 2, and so on.
 mean() {
 	#Get the number of columns
 	numcount=$( wc -w < $datafilepath)
@@ -114,53 +105,16 @@ mean() {
 
 }
 
-#	i=0
-	#Make input row file
-#	while read numberLine
-#	do
-#		colscount=0
-#		for each in $numberLine 
-#		do			
-			#echo "Num=$each"
-#			colscount=$(( colscount + 1 ))
-#		done
-#		colscount=$(( colscount * 2))
-		#echo "colcount=$colscount"
-	
-#		while [[ $i -lt $colscount ]]
-#		do
-#			(( i++ ))
-			#echo "i=$i"
-#			out=$(( i % 2 ))
-#			if [[ $out -eq 0 ]]
-#			then
-				:
-#			else
-#				sum=0
-#				col=$(cut -c $i $datafilepath) #| tr '\n' '\t')
-				#echo "$col"
-#				echo "$col" > $tempCol
-	
-#				while read num
-#				do
-#					lincount=$( wc -l < $tempCol)
-#					sum=$(( sum + num ))
-#					avg=$(( ($sum + ($lincount/2) * (($sum>0)*2-1)) / $lincount ))
-#				done < $tempCol
-				
-				#echo "avg=$avg"
-#				echo "$avg" >> $tempRow
-#				display=$(cat $tempRow | tr '\n' '\t')
-#			fi
-#		(( i++ ))
-#		done
-#	done < $datafilepath
-#	echo "${display%?}" >> $tempfile
-#	cat < $tempfile
-	#echo "${display%?}"
+# How the script handles piping stdout into stdin
+# and stdin directly as a command line argument 
+if [ "$#" = "1" ]
+then
+	cat > $datafilepath			#read in stdin to data file
+elif [ "$#" = "2" ]
+then
+	datafilepath=$2				
+fi
 
-#}
-	
 
 # If number of args is greater than 2 or the file doesn't exist
 # print error message to stderr, nothing to stdout and return 1
