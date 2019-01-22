@@ -23,14 +23,6 @@ dims() {
 	echo "$rows $cols"			# Display rows and cols
 }
 
-<<<<<<< HEAD
-
-
-
-
-=======
->>>>>>> matrix-dims-3
-
 # Transpose function: Reflects the elements of the matrix 
 # along the main diagonal. (Eg. An MxN matrix becomes NxM)
 # Values along the main diagonal will remain unchanged.
@@ -55,18 +47,9 @@ transpose() {
 	cat < $tempCol
 }
 
-<<<<<<< HEAD
-
-
-
-
-
-
-=======
 # Mean function: Takes an MxN matrix input and returns an 1xN
 # row vector where the first element is the mean of column 1
 # and the second element is the mean of column 2, and so on.
->>>>>>> matrix-dims-3
 mean() {
 	#Get the number of columns
 	numcount=$( wc -w < $datafilepath)
@@ -121,58 +104,8 @@ mean() {
 
 }
 
-<<<<<<< HEAD
-#	i=0
-	#Make input row file
-#	while read numberLine
-#	do
-#		colscount=0
-#		for each in $numberLine 
-#		do			
-			#echo "Num=$each"
-#			colscount=$(( colscount + 1 ))
-#		done
-#		colscount=$(( colscount * 2))
-		#echo "colcount=$colscount"
-	
-#		while [[ $i -lt $colscount ]]
-#		do
-#			(( i++ ))
-			#echo "i=$i"
-#			out=$(( i % 2 ))
-#			if [[ $out -eq 0 ]]
-#			then
-				:
-#			else
-#				sum=0
-#				col=$(cut -c $i $datafilepath) #| tr '\n' '\t')
-				#echo "$col"
-#				echo "$col" > $tempCol
-	
-#				while read num
-#				do
-#					lincount=$( wc -l < $tempCol)
-#					sum=$(( sum + num ))
-#					avg=$(( ($sum + ($lincount/2) * (($sum>0)*2-1)) / $lincount ))
-#				done < $tempCol
-				
-				#echo "avg=$avg"
-#				echo "$avg" >> $tempRow
-#				display=$(cat $tempRow | tr '\n' '\t')
-#			fi
-#		(( i++ ))
-#		done
-#	done < $datafilepath
-#	echo "${display%?}" >> $tempfile
-#	cat < $tempfile
-	#echo "${display%?}"
-
-#}
-	
-=======
 # How the script handles piping stdout into stdin
 # and stdin directly as a command line argument 
->>>>>>> matrix-dims-3
 if [ "$#" = "1" ]
 then
 	cat > $datafilepath			#read in stdin to data file
@@ -198,5 +131,3 @@ then
 fi
 
 $1 "${@:2}"
-
-
