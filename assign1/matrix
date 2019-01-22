@@ -16,25 +16,24 @@ trap "rm -f $datafilepath $tempCol $tempRow $tempfile $avgfile" EXIT INT HUP TER
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
 # of columns (e.g. For a 5x6 matrix stdout will show '5 6')
-dims() {	
-	rows=0
-	while read numberLine 
-	do
-		rows=$(( rows + 1 ))		# Update row count
-		cols=0				# Initialize columns 	
-		for i in $numberLine	# Iterate over each value per row
-		do
-			cols=$(( cols + 1 ))	# Update column count
-		done
-	done < $datafilepath			# Stdin from arg1 (or piping stdout file)
+dims() {
+	rows=$(wc -l < $datafilepath)		# Get number of rows
+	numcount=$(wc -w < $datafilepath)	# Get total number count
+	cols=$(( numcount / rows ))		# Calculate number of columns
 	echo "$rows $cols"			# Display rows and cols
 }
 
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> matrix-dims-3
 
+# Transpose function: Reflects the elements of the matrix 
+# along the main diagonal. (Eg. An MxN matrix becomes NxM)
+# Values along the main diagonal will remain unchanged.
 transpose() {
 	i=0
 	#Make input row file
@@ -56,12 +55,18 @@ transpose() {
 	cat < $tempCol
 }
 
+<<<<<<< HEAD
 
 
 
 
 
 
+=======
+# Mean function: Takes an MxN matrix input and returns an 1xN
+# row vector where the first element is the mean of column 1
+# and the second element is the mean of column 2, and so on.
+>>>>>>> matrix-dims-3
 mean() {
 	#Get the number of columns
 	numcount=$( wc -w < $datafilepath)
@@ -116,6 +121,7 @@ mean() {
 
 }
 
+<<<<<<< HEAD
 #	i=0
 	#Make input row file
 #	while read numberLine
@@ -163,6 +169,10 @@ mean() {
 
 #}
 	
+=======
+# How the script handles piping stdout into stdin
+# and stdin directly as a command line argument 
+>>>>>>> matrix-dims-3
 if [ "$#" = "1" ]
 then
 	cat > $datafilepath			#read in stdin to data file
