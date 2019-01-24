@@ -9,9 +9,16 @@
 datafilepath="datafile$$"
 tempCol="tempcolfile$$"
 tempRow="temprowfile$$"
+tempRow1="temprowfile1$$"
+tempCol1="tempcolfile1$$"
 tempfile="tempsumfile$$"
+tempsumfile="sumfile$$"
+tempsumfile2="sumfile2$$"
 avgfile=$"tempavgfile$$"
-trap "rm -f $datafilepath $tempCol $tempRow $tempfile $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
+tempdatafilepath=$"tempdatafile$$"
+temptempfile=$"tempfile$$"
+tempaddfile=$"tempaddfile$"
+#trap "rm -f $tempCol $tempRow $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -104,27 +111,333 @@ mean() {
 
 }
 
+add() {
+#	echo "Rows = $datafilepathlines"
+#	echo "Cols = $datafilepathcols"
+	
+	#Declare arrays
+	numarray1=( $(cat $datafilepath) )	#$Arg2 in command line
+	numarray2=( $(cat $tempfile) )		#$Arg3 in command line
+	
+	#Initialize counter to maintain array dimensions
+	count=1
+
+	#Iterate through all array elements
+	for ((i=0; i<${#numarray1[@]};++i))	
+	do
+		#printf "%d\t%d\n" ${numarray1[i]} ${numarray2[i]}
+		
+		#Calculate sum using index i from array1 and array2
+		sum=0
+		sum=$(( ${numarray1[i]} + ${numarray2[i]} ))
+		#echo "Sum=$sum"
+	
+		#Maintain dimensions of sum vector array
+		if [[ $count -lt $datafilepathcols ]]
+		then
+			#Print sum on same line separated by tab
+			printf "%d\t" $sum 
+		
+			#Increment count var
+			(( count++ ))
+		else	
+			#Print sum on new line
+			printf "%d\n" $sum
+			
+			#Reset count for new row
+			count=1
+		fi
+	done
+}
+	
+
+
+#	count=0
+#	for i in ${numarray1[@]}
+#	do
+#		i=0
+		#j=0
+#		for j in ${numarray2[@]}
+#		do
+#			echo "i=$i"
+#			echo "j=$j"
+#			sum=0
+			#echo "${numarray1[$i]} ${numarray2[$j]}"
+			#echo "Value of i = $i"
+			#echo "Value of j = $j"
+#			echo "Value at i$i = ${numarray1[$i]}"
+#			echo "Value at j$j = ${numarray2[$j]}"
+#			sum=$(( $i + $j ))
+			#(( count++ )) 
+#			if [[ $count == $datafilepathcols ]]
+#			then
+#				printf "%d\n" $sum >> $tempCol
+#				count=0
+#			else
+#				printf "%d\t" $sum >> $tempCol
+#				(( count++ ))
+#			fi
+		#printf "%d\t%d\n" $i $j #>> $tempCol
+#		(( i++ ))
+#		done
+#		echo "--- Cating tempCol ---"
+#		cat -A $tempCol
+#		echo "-- Normal --"
+#		cat  $tempCol
+#		break
+	#	echo "$i" >> $tempCol
+#	done
+
+#	while read myLine
+#	do
+#		echo "---"
+#		echo "$myLine"
+#	done < $tempCol
+
+
+#	for i in "${numarray1[@]}"
+#	do
+		#echo "$i"
+#		echo "$i" >> $tempCol
+#	done
+	
+#	array1value=$(cat $tempCol | tr '\n' '\t')
+#	echo "$array1value"
+
+#	for j in "${numarray2[@]}"
+#	do
+		#echo "$j"
+#		echo "$j" >> $tempCol1
+#	done
+		
+#	array2value=$(cat $tempCol1 | tr '\n' '\t')
+#	echo "$array2value"
+		
+#	echo "$array1value"  > $tempRow1
+#	echo "$array2value" >> $tempRow1
+#	echo "--"
+#	cat $tempRow1
+
+#	k=1
+#	sumcount=0
+	#Get the number of columns
+#	numcount=$( wc -w < $tempRow1)
+#	echo "Number of nos.= $numcount"
+#	lincount=$( wc -l < $tempRow1)
+#	echo "Number of lines= $lincount"
+#	colcount=$(( numcount / lincount))
+#	echo "Number of cols= $colcount"
+#	count=0
+#	while [[ $k -le $colcount ]]
+#	do 
+#		sum=0
+		#count=0
+		#cut columns and store into tempfile
+#		cutcol=$(cut -f $k $tempRow1)
+		#echo "--- cut col ---"
+#		echo "$cutcol"  > $temptempfile
+		#echo "fileprint"
+#		cat $temptempfile > $tempsumfile
+#		while read number
+#		do	
+			#echo "Number=$number"
+#			sum=$(( sum + number ))
+		#	echo "Sum=$sum"
+#		done < $tempsumfile
+		
+#		echo "$sum" > $tempsumfile2
+#		echo "-- temp sum --"
+#		cat $tempsumfile2
+#		echo "---"
+#		display=$(cat $tempsumfile2 | head -n $datafilepathcols | tr '\n' '\t')
+#		echo "$display" 
+#		k=$(( k + 1 ))
+#	done
+	
+#	echo "$display"
+		#Read each numebr from the tempCol file and calculate sum
+	#	while read number
+#		do
+#			sum=$(( sum + number )) 
+		#	echo "Sum=$sum"
+#		done < $tempCol
+	
+		
+#	(( k++ ))	
+
+
+#done 
+
+
+
+
+
+
+
+	#initialize counter var
+#	i=1
+#	j=1
+#	sum=0
+
+#	while [[ $i -le $datafilepathcols ]]
+#	do
+#		cutfield1=$(cut -f $i $datafilepath | tr '\n' '\t') # | head -n $i)
+#		cutfield2=$(cut -f $i $tempfile | tr '\n' '\t') # | head -n $i)
+	#	echo "-- File 1 cut --"
+#		echo "$cutfield1"  > $tempRow
+	#	echo "--File 2 cut --" 
+#		echo "$cutfield2"  > $tempRow1
+	#	echo "-- 3 --" 
+	#	while [[ $j -le $datafilepathcols ]]
+#		for j in $tempRow
+#		do
+#			cutfield3=$(cut -c $j $tempRow)
+#			echo "$cutfield3"
+#			echo "---"
+#			cutfield4=$(cut -c $j $tempRow1)
+#			echo "$cutfield4"
+#		done
+#		echo "$cutfield3"
+	#	echo "--4--" 
+#		echo "$cutfield4"
+	#	echo "--5--" 
+	#	while [[ $j -le $datafilepathlines ]]	
+	#	do
+		
+		#initialize sum & avg for each column
+	#	sum=0
+	#	avg=0
+	
+
+		#cut columns and store into tempfile
+#			cutfield1=$(cut -f $i $datafilepath | head -n $j) # | tr '\n' '\t') # | head -n $i)
+#			cutfield2=$(cut -f $i $tempfile | head -n $i) # tr '\n' '\t') # | head -n $i)
+	#		echo "-----"
+	#		echo "$cutfield1 $cutfield2" # > $tempRow 
+			#echo "===="
+			#echo "$cutfield2" # > $tempCol
+	#		echo "---"
+	#		(( j++ ))
+	#	done 	
+
+#		newcut=$(cut -f $i $tempRow)
+#		echo "newcut"
+#		echo "$newcut"
+
+#		while read num
+#		do
+#			for i in $num
+#			do	
+#				echo "$i"
+				#cutfield1=$(cut -f $i $datafilepath  | tr '\n' '\t') # | head -n $i)
+				#cutfield2=$(cut -f $i $tempfile  | tr '\n' '\t') # | head -n $i)
+				#echo "$cutfield1" > $tempRow 
+				#echo "&"
+				#echo "$cutfield2" > $tempCol
+				#echo "---"	
+				#newcut=$(cut -f $i $tempRow)
+				#echo "newcut"
+#				#echo "$newcut"
+#			done
+#		done < $tempRow
+		
+
+
+
+	#	for k in $cutfield1 $cutfield2	
+	#	do
+	#		echo "Number = $k"
+			#value1=$(cat $datafilepath | head -n $j)
+			#echo "Value=$value1"
+	#	done 
+
+		#(( j++ )) 
+		#done
+		#cut columns and store into tempfile
+		#cutfield1=$(cut -f $i $datafilepath) 
+		#cutfield2=$(cut -f $i $tempfile)
+		#echo "$cutfield1" > $tempdatafilepath
+		#echo "$cutfield2" > $temptempfile
+		#echo $tempdatafilepath >> $temptempfile
+		#echo "Values in temptempfile:"
+		#cat $temptempfile
+	
+	#	for j in $cutfield1
+	#	do
+	#		value1=$(cat $tempdatafilepath | head -n $j)
+	#		value2=$(cat $temptempfile | head -n $j)
+	#		echo "$value1" $value2"
+	#	done < $tempdatafilepath
+		#Read each numebr from the tempCol file and calculate sum
+#		while read number
+#		do
+#			echo "Num=$number"
+		#	sum=$(( sum + number )) 
+		#	echo "Sum=$sum"
+#		done < $tempCol
+
+		
+		#Read each numebr from the tempCol file and calculate sum
+		#while read number
+		#do
+	#		echo "Num=$number"
+		#	sum=$(( sum + number )) 
+		#	echo "Sum=$sum"
+	#	done < $tempCol
+#	(( i++ ))
+	
+#	done
+
+
 # How the script handles piping stdout into stdin
 # and stdin directly as a command line argument 
-if [ "$#" = "1" ]
+if [[ "$1" == "dims" ]] || [[ "$1" == "transpose" ]] || [[ "$1" == "mean" ]]
 then
-	cat > $datafilepath			#read in stdin to data file
-elif [ "$#" = "2" ]
+	if [[ $# -eq 1 ]]
+	then
+		cat > $datafilepath			#read in stdin to data file
+	elif [[ $# -eq 2 ]]
+	then
+		datafilepath=$2
+	else
+		echo "Error: Invalid number of arguments." 1>&2
+		exit 1
+	fi	
+elif [[ "$1" == "add" ]] #|| [[ "$1" == "multiply" ]]
 then
-	datafilepath=$2				
-fi
+	if [[ "$#" != "3" ]]  
+	then
+		echo "Invalid argument count. Enter two arguments only." 1>&2
+		exit 1
+	else 
+		datafilepath=$2 
+		tempfile=$3
+		datafilepathlines=$(wc -l < $datafilepath)
+		datafilepathwords=$(wc -w < $datafilepath)
+		datafilepathcols=$(( datafilepathwords / datafilepathlines ))
+		
+		tempfilepathlines=$(wc -l < $tempfile)
+		tempfilepathwords=$(wc -w < $tempfile)
+		tempfilepathcols=$(( tempfilepathwords / tempfilepathlines ))
 
+		if [[ $datafilepathlines != $tempfilepathlines ]] || [[ $datafilepathcols != $tempfilepathcols ]]
+		then
+			echo "Wrong sized matrices!" 1>&2
+			exit 1
+		fi
+	fi
+fi
 
 # If number of args is greater than 2 or the file doesn't exist
 # print error message to stderr, nothing to stdout and return 1
 # else print the number of rows and cols to stdout and return 0
-if [ $# -gt 2 ] || [ $# -lt 1 ] 
-then
-	echo "Error: Improper argument count" 1>&2
-	exit 1
-fi
+#if [ $# -gt 2 ] || [ $# -lt 1 ] 
+#then
+#	echo "Error: Improper argument count" 1>&2
+#	exit 1
+#fi
 
-if [ ! -f $datafilepath ]
+if [[ ! -f $datafilepath ]]
 then
 	echo "Error: File $datafilepath does not exist." 1>&2
 	exit 1
