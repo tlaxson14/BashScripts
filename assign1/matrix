@@ -112,39 +112,33 @@ mean() {
 }
 
 add() {
-#	echo "Rows = $datafilepathlines"
-#	echo "Cols = $datafilepathcols"
+	# Declare arrays
+	numarray1=( $(cat $datafilepath) )	# $Arg2 from command line
+	numarray2=( $(cat $tempfile) )		# $Arg3 from command line
 	
-	#Declare arrays
-	numarray1=( $(cat $datafilepath) )	#$Arg2 in command line
-	numarray2=( $(cat $tempfile) )		#$Arg3 in command line
-	
-	#Initialize counter to maintain array dimensions
+	# Initialize counter used to maintain array dimensions
 	count=1
 
-	#Iterate through all array elements
+	# Iterate through all array elements
 	for ((i=0; i<${#numarray1[@]};++i))	
 	do
-		#printf "%d\t%d\n" ${numarray1[i]} ${numarray2[i]}
-		
-		#Calculate sum using index i from array1 and array2
+		# Calculate resulting sum iteratively from arrays
 		sum=0
 		sum=$(( ${numarray1[i]} + ${numarray2[i]} ))
-		#echo "Sum=$sum"
 	
-		#Maintain dimensions of sum vector array
+		# Maintain dims of sum vector array with original 
 		if [[ $count -lt $datafilepathcols ]]
 		then
-			#Print sum on same line separated by tab
+			# Print sum on same line separated by tab
 			printf "%d\t" $sum 
 		
-			#Increment count var
+			# Increment count var
 			(( count++ ))
 		else	
-			#Print sum on new line
+			# Print sum on new line
 			printf "%d\n" $sum
 			
-			#Reset count for new row
+			# Reset count for new row
 			count=1
 		fi
 	done
@@ -157,7 +151,7 @@ if [[ "$1" == "dims" ]] || [[ "$1" == "transpose" ]] || [[ "$1" == "mean" ]]
 then
 	if [[ $# -eq 1 ]]
 	then
-		cat > $datafilepath			#read in stdin to data file
+		cat > $datafilepath		#read in stdin to data file
 	elif [[ $# -eq 2 ]]
 	then
 		datafilepath=$2
