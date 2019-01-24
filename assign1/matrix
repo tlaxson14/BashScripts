@@ -143,6 +143,15 @@ add() {
 		fi
 	done
 }
+
+
+multiply() {
+	echo "In mulitply fxn"
+
+
+}
+
+
 	
 
 # How the script handles piping stdout into stdin
@@ -182,16 +191,24 @@ then
 			exit 1
 		fi
 	fi
+elif [[ $1 == "multiply" ]]
+then
+	if [[ "$#" != "3" ]]  
+	then
+		echo "Invalid argument count. Enter two arguments only." 1>&2
+		exit 1
+	else 
+		datafilepath=$2 
+		tempfile=$3
+		datafilepathlines=$(wc -l < $datafilepath)
+		datafilepathwords=$(wc -w < $datafilepath)
+		datafilepathcols=$(( datafilepathwords / datafilepathlines ))
+		
+		tempfilepathlines=$(wc -l < $tempfile)
+		tempfilepathwords=$(wc -w < $tempfile)
+		tempfilepathcols=$(( tempfilepathwords / tempfilepathlines ))
+	fi
 fi
-
-# If number of args is greater than 2 or the file doesn't exist
-# print error message to stderr, nothing to stdout and return 1
-# else print the number of rows and cols to stdout and return 0
-#if [ $# -gt 2 ] || [ $# -lt 1 ] 
-#then
-#	echo "Error: Improper argument count" 1>&2
-#	exit 1
-#fi
 
 if [[ ! -f $datafilepath ]]
 then
