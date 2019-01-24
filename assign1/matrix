@@ -18,7 +18,7 @@ avgfile=$"tempavgfile$$"
 tempdatafilepath=$"tempdatafile$$"
 temptempfile=$"tempfile$$"
 tempaddfile=$"tempaddfile$"
-#trap "rm -f $tempCol $tempRow $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
+trap "rm -f $tempCol $tempRow $avgfile $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
