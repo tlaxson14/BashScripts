@@ -120,6 +120,7 @@ add() {
 	count=1
 
 	# Iterate through all array elements
+	# Source: https://stackoverflow.com/questions/17403498/iterate-over-two-arrays-simultaneously-in-bash
 	for ((i=0; i<${#numarray1[@]};++i))	
 	do
 		# Calculate resulting sum iteratively from arrays
@@ -146,13 +147,14 @@ add() {
 
 
 multiply() {
-	echo "In mulitply fxn"
-
-
+	echo "1st"
+	cat $datafilepath
+	echo "2nd"
+	cat $tempfile
+	echo "---"
 }
 
 
-	
 
 # How the script handles piping stdout into stdin
 # and stdin directly as a command line argument 
@@ -207,6 +209,11 @@ then
 		tempfilepathlines=$(wc -l < $tempfile)
 		tempfilepathwords=$(wc -w < $tempfile)
 		tempfilepathcols=$(( tempfilepathwords / tempfilepathlines ))
+	fi
+	if [[ $datafilepathcols != $tempfilepathlines ]] #|| [[ $datafilepathcols != $tempfilepathcols ]]
+	then
+		echo "Wrong sized matrices!" 1>&2
+		exit 1
 	fi
 fi
 
