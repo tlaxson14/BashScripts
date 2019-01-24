@@ -9,9 +9,16 @@
 datafilepath="datafile$$"
 tempCol="tempcolfile$$"
 tempRow="temprowfile$$"
+tempRow1="temprowfile1$$"
+tempCol1="tempcolfile1$$"
 tempfile="tempsumfile$$"
+tempsumfile="sumfile$$"
+tempsumfile2="sumfile2$$"
 avgfile=$"tempavgfile$$"
-trap "rm -f $datafilepath $tempCol $tempRow $tempfile $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
+tempdatafilepath=$"tempdatafile$$"
+temptempfile=$"tempfile$$"
+tempaddfile=$"tempaddfile$"
+trap "rm -f $tempCol $tempRow $avgfile $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -104,27 +111,89 @@ mean() {
 
 }
 
+add() {
+	# Declare arrays
+	numarray1=( $(cat $datafilepath) )	# $Arg2 from command line
+	numarray2=( $(cat $tempfile) )		# $Arg3 from command line
+	
+	# Initialize counter used to maintain array dimensions
+	count=1
+
+	# Iterate through all array elements
+	for ((i=0; i<${#numarray1[@]};++i))	
+	do
+		# Calculate resulting sum iteratively from arrays
+		sum=0
+		sum=$(( ${numarray1[i]} + ${numarray2[i]} ))
+	
+		# Maintain dims of sum vector array with original 
+		if [[ $count -lt $datafilepathcols ]]
+		then
+			# Print sum on same line separated by tab
+			printf "%d\t" $sum 
+		
+			# Increment count var
+			(( count++ ))
+		else	
+			# Print sum on new line
+			printf "%d\n" $sum
+			
+			# Reset count for new row
+			count=1
+		fi
+	done
+}
+	
+
 # How the script handles piping stdout into stdin
 # and stdin directly as a command line argument 
-if [ "$#" = "1" ]
+if [[ "$1" == "dims" ]] || [[ "$1" == "transpose" ]] || [[ "$1" == "mean" ]]
 then
-	cat > $datafilepath			#read in stdin to data file
-elif [ "$#" = "2" ]
+	if [[ $# -eq 1 ]]
+	then
+		cat > $datafilepath		#read in stdin to data file
+	elif [[ $# -eq 2 ]]
+	then
+		datafilepath=$2
+	else
+		echo "Error: Invalid number of arguments." 1>&2
+		exit 1
+	fi	
+elif [[ "$1" == "add" ]] #|| [[ "$1" == "multiply" ]]
 then
-	datafilepath=$2				
-fi
+	if [[ "$#" != "3" ]]  
+	then
+		echo "Invalid argument count. Enter two arguments only." 1>&2
+		exit 1
+	else 
+		datafilepath=$2 
+		tempfile=$3
+		datafilepathlines=$(wc -l < $datafilepath)
+		datafilepathwords=$(wc -w < $datafilepath)
+		datafilepathcols=$(( datafilepathwords / datafilepathlines ))
+		
+		tempfilepathlines=$(wc -l < $tempfile)
+		tempfilepathwords=$(wc -w < $tempfile)
+		tempfilepathcols=$(( tempfilepathwords / tempfilepathlines ))
 
+		if [[ $datafilepathlines != $tempfilepathlines ]] || [[ $datafilepathcols != $tempfilepathcols ]]
+		then
+			echo "Wrong sized matrices!" 1>&2
+			exit 1
+		fi
+	fi
+fi
 
 # If number of args is greater than 2 or the file doesn't exist
 # print error message to stderr, nothing to stdout and return 1
 # else print the number of rows and cols to stdout and return 0
-if [ $# -gt 2 ] || [ $# -lt 1 ] 
-then
-	echo "Error: Improper argument count" 1>&2
-	exit 1
-fi
+#if [ $# -gt 2 ] || [ $# -lt 1 ] 
+#then
+#	echo "Error: Improper argument count" 1>&2
+#	exit 1
+#fi
 
-if [ ! -f $datafilepath ]
+if [[ ! -f $datafilepath ]]
 then
 	echo "Error: File $datafilepath does not exist." 1>&2
 	exit 1
