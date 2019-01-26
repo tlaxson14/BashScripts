@@ -17,8 +17,12 @@ tempsumfile2="sumfile2$$"
 avgfile=$"tempavgfile$$"
 tempdatafilepath=$"tempdatafile$$"
 temptempfile=$"tempfile$$"
-tempaddfile=$"tempaddfile$"
-trap "rm -f $tempCol $tempRow $avgfile $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
+tempaddfile=$"tempaddfile$$"
+tempfile1=$"tempfile1$$"
+tempfile2=$"tempfile2$$"
+matrix1tempfile="mat1tempfile$$"
+matrix2tempfile="mat2tempfile$$"
+trap "rm -f $tempCol $tempRow $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -147,11 +151,567 @@ add() {
 
 
 multiply() {
-	echo "1st"
-	cat $datafilepath
-	echo "2nd"
-	cat $tempfile
-	echo "---"
+
+#	echo "Rows in $1 = $matrix1rows"; echo "Rows in $2 = $matrix2rows"	
+#	if [[ $matrix1rows < $matrix2rows ]]
+#	then
+#		echo "Keeping it the same"
+		
+		# Matrix1 rows
+		#rows=$datafilepathlines
+		
+		# Matrix 2 cols
+	#	cols=$tempfilepathcols
+	
+#		cat $matrix1tempfile
+#		echo
+#		cat $matrix2tempfile	
+#		echo
+	
+	#	echo "mat1rows=$matrix1rows"  #tempfilewc=$(wc -w < $tempfile1)
+	#	echo "mat1cols=$matrix1cols"
+
+#		matrix1=( $(cat "$matrix1tempfile") )
+#		matrix2=( $(cat "$matrix2tempfile") )
+
+#		for ((i=0; i<${#matrix1[@]};++i))	
+#		do
+#			echo "${matrix1[$i]}"
+#		done
+#		echo
+#		for ((i=0; i<${#matrix2[@]};++i))	
+#		do
+#			echo "${matrix2[$i]}"
+#		done
+
+#		tempfilerows=$(wc -l < $tempfile1)
+#		tempfilecols=$(( tempfilewc / tempfilerows ))
+	#	echo "Cols = $tempfilecols"  
+	#	cat $tempfile > $tempfile2
+	#	echo "$rows -- $cols"
+		# Declare arrays
+#		numarray1=( $(cat $tempfile1) )		# $Arg2 from command line
+#		numarray2=( $(cat $tempfile2) )		# $Arg3 from command line
+	#	for ((i=0; i<${#numarray1[@]};++i))	
+	#	do
+	#		echo "${numarray1[$i]}"
+	#	done
+#	else
+#		echo "Switching it up"
+		# Matrix 2 rows
+	#	rows=$matrix2rows
+		
+		# Matrix 1 cols 
+	#	cols=$matrix1cols
+		
+#		cat $matrix1tempfile
+#		echo
+#		cat $matrix2tempfile
+#		echo
+	
+#		matrix1=( $(cat "$matrix2tempfile") )
+#		matrix2=( $(cat "$matrix1tempfile") )
+
+#		for ((i=0; i<${#matrix1[@]};++i))	
+#		do
+#			echo "${matrix1[$i]}"
+#		done
+#		echo
+#		for ((i=0; i<${#matrix2[@]};++i))	
+#		do
+#			echo "${matrix2[$i]}"
+#		done
+	#	cat $tempfile > $tempfile1
+	#	tempfilewc=$(wc -w < $tempfile1)
+	#	tempfilerows=$(wc -l < $tempfile1)
+	#	tempfilecols=$(( tempfilewc / tempfilerows ))
+	#	echo "Cols = $tempfilecols"  
+	#	cat $datafilepath > $tempfile2
+		# Declare arrays
+#		numarray1=( $(cat $tempfile1) )		# $Arg2 from command line
+#		numarray2=( $(cat $tempfile2) )		# $Arg3 from command line
+	#	for ((i=0; i<${#numarray1[@]};++i))	
+	#	do
+	#		echo "${numarray2[$i]}"
+	#	done
+#	fi
+
+
+
+
+######################################################
+
+
+#	echo "-- Chosen matrix --"
+#	cat $matrix 
+#	echo " -- Other matrix -- "
+#	cat $tempfile2 
+
+	# Get matrix 1 rows and cols
+#	mat1rows=$(wc -l < $datafilepath)
+#	mat1chars=$(wc -w < $datafilepath)
+#	mat1cols=$(( mat1chars / mat1rows ))
+	
+	matrix1rows=$(wc -l < $matrix1tempfile)
+	matrix1nums=$(wc -w < $matrix1tempfile)
+	matrix1cols=$(( matrix1nums / matrix1rows ))
+	
+	#echo "Matrix 1 stats"
+	#echo "Rows:$matrix1rows"
+	#echo "Cols:$matrix1cols"
+	#echo "------------"
+	
+	
+	#echo "Matrix 2 stats"
+	#echo "Rows:$matrix2rows"
+	#echo "Cols:$matrix2cols"
+	#echo "------------"
+	
+	# Print matrix 1 and dims
+#	echo "Matrix1"
+#	cat $matrix1tempfile
+#	echo
+#	echo "Rows=$mat1rows Cols=$mat1cols"
+#	echo
+
+	# Get matrix 2 rows and cols
+#	mat2rows=$(wc -l < $tempfile)
+#	mat2chars=$(wc -w < $tempfile)
+#	mat2cols=$(( mat2chars / mat2rows ))
+	matrix2rows=$(wc -l < $matrix2tempfile)
+	matrix2nums=$(wc -w < $matrix2tempfile)
+	matrix2cols=$(( matrix2nums / matrix2rows ))
+
+	# Print matrix 2 and dims
+#	echo "Matrix2"
+#	cat $matrix2tempfile
+#	echo
+#	echo "Rows=$mat2rows Cols=$mat2cols"
+#	echo
+
+#	if [[ $matrix1rows -lt $matrix2rows ]]
+#	then
+#		matrix1tempfile=$2 
+#		matrix2tempfile=$3
+#	else
+#		matrix1tempfile=$3 
+#		matrix2tempfile=$2
+#	fi
+
+
+#####	count=1	
+####	# Iterate through rows of $arg1 from command line
+####	for ((i=1; i<=$matrix1rows; i++))
+####	do
+	#	echo "$(head -$i $matrix1tempfile | tail -1)"
+#####		mat1=$(head -$i $matrix1tempfile | tail -1)
+#####		for ((j=1; j<=$matrix2cols; j++))
+####		do
+	#		echo "cutting.."
+	#		echo "$(cut -f $j $matrix2tempfile | tr '\n' '\t')"
+#####			mat2=$(cut -f $j $matrix2tempfile | tr '\n' '\t')
+	#		echo "cutting complete"
+		
+####			matrixproduct=0		# Initialize matrix product to zero for newline/newcol
+			
+			# Iterate through matrix file 1 columns
+####			for ((k=1; k<=$matrix1cols; k++))
+##			do
+####				matrix1value=$(cut -d'	'  -f $k <<< "$mat1")
+####				matrix2value=$(cut -d'	'  -f $k <<< "$mat2")
+	#			echo "Mat1=$matrix1value -- Mat2=$matrix2value"
+####				matrixproduct=$(( matrixproduct + (matrix1value * matrix2value) ))
+####			done 
+###
+####			if [[ $j == $matrix2cols ]]
+####			then
+##				printf "%d\n" $matrixproduct
+#####			else
+####				printf "%d\t" $matrixproduct
+##			fi
+
+
+
+
+	#			echo "Matrix product = $matrixproduct"
+	#			(( count++ ))
+				#  Format stdout of product matrix	
+#				if [[ $count -lt $matrix2cols ]]
+#				then
+#					printf "%d\t" $matrixproduct >> $tempRow
+#					(( count++ ))
+#				else
+#					count=1
+#					printf "%d\n" $matrixproduct >> $tempRow
+#				fi
+###		done
+###	done
+
+#	cat $tempRow
+#	cat -A $tempRow
+
+
+
+
+
+	# Determine rows and cols of multiplication matrix
+	if [[ $matrix1rows -lt $matrix2rows ]]
+	then
+		matrix3rows=$matrix1rows
+	else
+		matrix3rows=$matrix2rows
+	fi
+
+	if [[ $matrix1cols -lt $matrix2cols ]]
+	then
+		matrix3cols=$matrix1cols
+	else
+		matrix3cols=$matrix2cols
+	fi
+
+#	echo "Product matrix rows, cols=$matrix3rows $matrix3cols"
+
+
+	declare -a matrix1
+	declare -a matrix2
+	declare -a multimatrix
+	matrix1=( $(cat "$matrix1tempfile") )              #datafilepath") )
+	matrix2=( $(cat "$matrix2tempfile") )              #tempfile") )
+	
+#	echo "Matrix 1"
+#	cat $matrix1tempfile
+#	echo
+#	echo "Matrix 2"
+#	cat $matrix2tempfile
+#	echo
+
+	count=1
+	for ((row=0; row<$matrix3rows; row++))
+	do
+		for ((col=0; col<$matrix3cols; col++))
+		do
+			product=0
+			for ((i=0; i<$matrix1cols; i++))
+
+			do
+#				echo "-- START --"
+				row1="$row"
+			#	echo "row1=$row1"
+				col1="$i"
+			#	echo "col1=$col1"
+				index1=$(( (row1 * matrix1cols) + col1 ))
+		#		echo "index1=$index1"
+				row2="$i"
+			#	echo "row2=$row2"
+				col2="$col"
+			#	echo "col2=$col2"
+				index2=$(( (row2 * matrix2cols) + col2 ))
+		#		echo "index2=$index2"
+				matrix1output=${matrix1[$index1]}
+				matrix2output=${matrix2[$index2]}
+#				echo "$matrix1output -- $matrix2output"
+
+				subtotal=$(( matrix1output * matrix2output ))
+				product=$(( $product + subtotal ))
+			#	echo "subtotal=$subtotal"
+			#	echo "total=$total"
+#				echo "--- END ---"
+			done
+#				echo "New loop"	
+				# Store the total in product matrix
+
+				#printf "%d\n" $total >> $tempRow
+				#(( count++ ))
+				# Format stdout of product matrix	
+				if [[ $count -lt $matrix3cols ]]
+				then
+					printf "%d\t" $product #>> $tempRow
+					(( count++ ))
+				else
+					count=1
+					printf "%d\n" $product #>> $tempRow
+				fi
+		done
+	done
+#	echo
+	#cat $tempRow
+#	cat -A $tempRow
+
+
+###############################################################
+
+
+
+
+#	count=0
+#	while read myLine
+#	do
+#		if [[ $count -lt $mat3cols ]]
+#		then
+#			printf "%d\t" $myLine
+#			(( count++ ))
+#		else
+#			printf "%d\n" $myLine
+#			count=0
+ #		fi
+		#echo "$myLine"
+#	done < $tempRow
+
+
+
+
+
+
+
+
+
+
+
+
+#	echo "Rows for $1 = $datafilepathlines"; echo "Rows for $2 = $tempfilepathlines"	
+#	if [[ $datafilepathlines < $tempfilepathlines ]]
+#	then
+#		rows=$datafilepathlines
+#		cols=$tempfilepathcols
+#		cat $datafilepath > $tempfile1
+#		tempfilewc=$(wc -w < $tempfile1)
+#		tempfilerows=$(wc -l < $tempfile1)
+#		tempfilecols=$(( tempfilewc / tempfilerows ))
+#		echo "Cols = $tempfilecols"  
+#		cat $tempfile > $tempfile2
+#		echo "$rows -- $cols"
+		# Declare arrays
+#		numarray1=( $(cat $tempfile1) )		# $Arg2 from command line
+#		numarray2=( $(cat $tempfile2) )		# $Arg3 from command line
+	#	for ((i=0; i<${#numarray1[@]};++i))	
+	#	do
+	#		echo "${numarray1[$i]}"
+	#	done
+#	else
+#		echo "Switching it up"
+#		rows=$tempfilepathlines
+#		cols=$datafilepathcols
+#		cat $tempfile > $tempfile1
+#		tempfilewc=$(wc -w < $tempfile1)
+#		tempfilerows=$(wc -l < $tempfile1)
+#		tempfilecols=$(( tempfilewc / tempfilerows ))
+#		echo "Cols = $tempfilecols"  
+#		cat $datafilepath > $tempfile2
+		# Declare arrays
+#		numarray1=( $(cat $tempfile1) )		# $Arg2 from command line
+#		numarray2=( $(cat $tempfile2) )		# $Arg3 from command line
+	#	for ((i=0; i<${#numarray1[@]};++i))	
+	#	do
+	#		echo "${numarray2[$i]}"
+	#	done
+#	fi
+
+
+#	echo "-- Chosen matrix --"
+#	cat $tempfile1 
+#	echo " -- Other matrix -- "
+#	cat $tempfile2 
+#	echo "$rows - $tempfilecols"
+#	j=0
+#	while [[ $i -lt $tempfilecols ]]
+#	do
+#		(( i++ ))
+#	for ((i=1; i<=$tempfilecols; i++))
+#	do
+#		col1=$(cut -f $i $tempfile1)
+#		echo "${col1%?}" > $tempRow
+#		while read myLine
+#		do
+#			for k in $col1
+#			do
+#				echo "k=$k"
+#			done	
+#			echo "$myLine"
+#		done < $tempRow
+#		cat -A $tempRow	
+#		for ((j=1; j<=$rows; j++))
+#		do
+#			col2=$(cut -f $j $tempfile2 | tr '\n' '\t')
+#			for l in $col2
+#			do
+#				echo "l=$l"
+#			done
+	#		echo "${col2%?}" #>> $tempCol
+	#		while read num1 <&3 && read num2 <&4
+	#		do
+	#			echo "-second while read loop-"
+	#			echo "$num1"
+	#			echo "$num2"
+	#			echo "-second while read loop-"
+	#		done 3<$tempCol 4<$tempRow
+			
+#		done
+#	done
+
+#	done
+
+	
+#	declare -a myarray1=$(cat $tempfile1) 
+#	declare -a myarray2=$(cat $tempfile2)
+
+#	while read -a num1 <&3 && read num2 <&4
+#	do
+#		for ((i=0; i<${#myarray1[@]}; i++))  #in $tempfile1
+#		do
+#			for ((j=0; j<${#myarray2[@]}; j++)) 
+#			do
+#				while read numarr1 <&3 && read numarr2 <&4
+#				do
+	#				for k in $numarr1
+	#				do
+#						echo "Arr1num=$numarr1"
+#						echo "----"
+#						echo "Arr2num=$numarr2"
+	#				done
+#				done 3<$tempfile1 4<$tempfile2
+		#		echo "Index $j myarray1=${myarray1[$j]}"
+		#		echo "---"
+		#		echo "Index $j myarray2=${myarray2[$j]}"
+#			done
+			#${myarray[$i]}=$num1
+			#echo "${myarray[$i]}"
+#		done
+	#	echo "${num1} -- ${num2} --"; echo
+#	done 3<"$tempfile1" 4<"$tempfile2"
+
+
+
+
+
+
+	#Logic for resultant rows and cols
+#	for ((i=0; i<=$tempfilerows; i++))
+#	do
+#		echo "rows:${numarray2[$i]}"; echo
+#		echo "Rows in chosen matrix $tempfilerows"
+#		for ((j=0; j<=$tempfilecols; j++))
+#		do
+#			echo "cols:${myarray[$i,$j]}"
+#			even=$(( j * 2 ))
+#			odd=$(( even + 1 ))
+		#	echo "Cols in chosen matrix $tempfilecols"
+#			if [[ $i -ne $tempfilerows ]] 
+#			then
+#				echo "EVEN"
+#				echo "${numarray1[$j]} -- ${numarray2[$even]}"
+#				echo "ODD"
+#				echo "${numarray1[$j]} -- ${numarray2[$odd]}"
+#			elif [[ $i -eq $tempfilerows ]]
+#				echo "EVEN"
+#				echo "${numarray1[$j]} -- ${numarray2[$even]}"
+#				echo "ODD"
+#				echo "${numarray1[$j]} -- ${numarray2[$odd]}"
+#			fi
+#		done
+#	done
+
+#	factor=0
+#	sumfactor=0	
+	#EVEN
+#	for ((i=0; i<${#numarray1[@]}; i++))
+#	do
+#		echo "Index $i in array1 = ${numarray1[$i]}"
+#	
+#		for ((j=0; j<${#numarray2[@]}; j++))
+#		do
+#			evenindex=$(( $i * 2 ))
+#			echo "Even Index $j in array2 = ${numarray2[$j]}"
+#			factor=$(( ${numarray1[$i]} * ${numarray2[$j]} )) 
+#			sumfactor=$(( sumfactor + factor ))
+#			echo "Factor=$factor"
+#			echo "Sum factor=$sumfactor"
+#			(( j++ ))
+#			(( i++ ))
+#
+		#Logic for ensuring correct dimensions evaluated	
+#		if [[ $i -le $(( tempfilecols-1 )) ]]
+#		then
+#			:
+#		else
+#			break
+#		fi
+#		done
+#		break
+#	done
+
+#	echo; echo
+#	echo "-- Testing Odd --"
+
+	
+	#ODD
+#	sumfactor=0
+#	factor=0
+#	i=0
+#	j=0
+#	for ((i=0; i<$rows; i++))
+#	do
+#		echo "-- 1 first --"
+#		echo "Index i$i in array1 = ${numarray1[$i]}"
+#		echo "Index j$j in array1 = ${numarray1[$j]}"
+	#	echo "Index k$k in array1 = ${numarray1[$k]}"
+#		echo "Index i$i in array2 = ${numarray2[$i]}"
+#		echo "Index j$j in array2 = ${numarray2[$j]}"
+		#echo "Index $i in array1 = ${numarray1[$i]}"
+		#echo "Index $i in array2 = ${numarray2[$i]}"
+#		for ((j=0; j<$cols; j++))
+#		do
+#			echo "-- 2 second --"
+#			echo "Index i$i in array1 = ${numarray1[$i]}"
+#			echo "Index j$j in array1 = ${numarray1[$j]}"
+	#		echo "Index k$k in array1 = ${numarray1[$k]}"
+#			echo "Index i$i in array2 = ${numarray2[$i]}"
+#			echo "Index j$j in array2 = ${numarray2[$j]}"
+	#		echo "Index k$k in array2 = ${numarray2[$k]}"
+#			result=0
+#			for (( k=0; k<$rows; k++))
+#			do
+#				echo "- 3 third -"
+		#		(( i++ ))
+		#		j=$(( j+2 ))
+#				var1=$(( i * $rows + k ))
+#				var2=$(( k * $cols + j ))
+#				result=$(( result + ${numarray1[var1]} * ${numarray2[var2]} ))	
+#				echo "specials = $var1"; echo "$var2"; echo "$result"; echo
+#				echo "Index i$i in array1 = ${numarray1[$i]}"
+#				echo "Index j$j in array1 = ${numarray1[$j]}"
+#				echo "Index k$k in array1 = ${numarray1[$k]}"
+#				echo "Index i$i in array2 = ${numarray2[$i]}"
+#				echo "Index j$j in array2 = ${numarray2[$j]}"
+#				echo "Index k$k in array2 = ${numarray2[$k]}"
+		#		factor=$(( ${numarray1[$i]} * ${numarray2[$j]} )) 
+		#		sumfactor=$(( sumfactor + factor ))
+		#		echo "Factor=$factor"
+		#		echo "Sum factor=$sumfactor"
+#			done
+	#		(( j++ ))
+		#	(( i++ ))
+		#Logic for ensuring correct dimensions evaluated	
+	#	if [[ $i -le $(( tempfilecols-1 )) ]]
+	#	then
+	#		:
+	#	else
+	#		break
+	#	fi
+#		done
+	
+		#echo "Outside loop: ${numarray1[$i]}"
+	#	echo "Index $i in array1 = ${numarray1[$i]}"
+#		echo "---- NEW ---- "
+#	done
+	
+		#Logic for ensuring correct dimensions evaluated	
+		#if [[ $i -lt $(( tempfilecols-1 )) ]]
+		#then
+#		:
+	#	else
+	#		break
+	#	fi
+#	done
 }
 
 
@@ -170,6 +730,12 @@ then
 		echo "Error: Invalid number of arguments." 1>&2
 		exit 1
 	fi	
+	
+	if [[ ! -f $datafilepath ]]
+	then
+		echo "Error: File $datafilepath does not exist." 1>&2
+		exit 1
+	fi
 elif [[ "$1" == "add" ]] #|| [[ "$1" == "multiply" ]]
 then
 	if [[ "$#" != "3" ]]  
@@ -193,34 +759,104 @@ then
 			exit 1
 		fi
 	fi
+	if [[ ! -f $datafilepath ]]
+	then
+		echo "Error: File $datafilepath does not exist." 1>&2
+		exit 1
+	fi
 elif [[ $1 == "multiply" ]]
 then
+	matrix1tempfile=$2
+	matrix2tempfile=$3
+	matrix1rows=$(wc -l < $matrix1tempfile)
+	matrix1nums=$(wc -w < $matrix1tempfile)
+	matrix1cols=$(( matrix1nums / matrix1rows ))
+	matrix2rows=$(wc -l < $matrix2tempfile)
+	matrix2nums=$(wc -w < $matrix2tempfile)
+	matrix2cols=$(( matrix2nums / matrix2rows ))
+	
 	if [[ "$#" != "3" ]]  
 	then
 		echo "Invalid argument count. Enter two arguments only." 1>&2
 		exit 1
-	else 
-		datafilepath=$2 
-		tempfile=$3
-		datafilepathlines=$(wc -l < $datafilepath)
-		datafilepathwords=$(wc -w < $datafilepath)
-		datafilepathcols=$(( datafilepathwords / datafilepathlines ))
-		
-		tempfilepathlines=$(wc -l < $tempfile)
-		tempfilepathwords=$(wc -w < $tempfile)
-		tempfilepathcols=$(( tempfilepathwords / tempfilepathlines ))
-	fi
-	if [[ $datafilepathcols != $tempfilepathlines ]] #|| [[ $datafilepathcols != $tempfilepathcols ]]
+	elif [[ $matrix1cols != $matrix2rows ]]
 	then
-		echo "Wrong sized matrices!" 1>&2
+		echo "Invalid sized matrices. Double-check cols of matrix1 equals rows of matrix2" 1>&2
 		exit 1
+	elif [[ ! -f $matrix1tempfile ]] || [[ ! -f $matrix2tempfile ]]
+	then
+		echo "File not found. Pass valid file argument with command." 1>&2
+		exit 1
+#	elif [[ $matrix1rows -lt $matrix2rows ]]
+#	then
+#		matrix1tempfile=$2 
+#		matrix2tempfile=$3
+#	else
+#		matrix1tempfile=$3 
+#		matrix2tempfile=$2
 	fi
+
+#		datafilepath=$2 
+#		tempfile=$3
+####		echo "Before--"
+#		cat $datafilepath
+#		echo
+#		cat $tempfile
+####		echo
+
+#		matrix1rows=$(wc -l < $datafilepath)
+#		matrix1nums=$(wc -w < $datafilepath)
+#		matrix1cols=$(( matrix1nums / matrix1rows ))
+#		matrix2rows=$(wc -l < $tempfile)
+#		matrix2nums=$(wc -w < $tempfile)
+#		matrix2cols=$(( matrix2nums / matrix2rows ))
+
+#		if [[ $matrix1rows -lt $matrix2rows ]]
+#		then
+#			matrix1tempfile=$2 
+#			matrix2tempfile=$3
+#		else
+#			matrix1tempfile=$3 
+#			matrix2tempfile=$2
+#		fi
+########
+#		echo "after"
+#		echo "1st matrix execute"
+#		cat $matrix1tempfile
+#		echo "2nd matrix execute"
+#		cat $matrix2tempfile
+#		echo "--"
+#########
+
+#		datafilepath=$2 
+#		tempfile=$3
+#		datafilepathlines=$(wc -l < $datafilepath)
+#		datafilepathwords=$(wc -w < $datafilepath)
+#		datafilepathcols=$(( datafilepathwords / datafilepathlines ))
+		
+#		tempfilepathlines=$(wc -l < $tempfile)
+#		tempfilepathwords=$(wc -w < $tempfile)
+#		tempfilepathcols=$(( tempfilepathwords / tempfilepathlines ))
+#	fi
+##	if [[ $matrix1cols != $matrix2rows ]] || [[ $matrix1rows != $matrix2cols ]]  # [[ $datafilepathcols != $tempfilepathcols ]]
+##	then
+##		echo "Wrong sized matrices!" 1>&2
+##		exit 1
+##	fi
+
+##	if [[ ! -f $matrix1tempfile ]] || [[ ! -f $matrix2tempfile ]]
+##	then
+##		echo "Error: File does not exist." 1>&2
+##		exit 1
+##	fi
 fi
 
-if [[ ! -f $datafilepath ]]
-then
-	echo "Error: File $datafilepath does not exist." 1>&2
-	exit 1
-fi
+
+
+#if [[ ! -f $datafilepath ]]
+#then
+#	echo "Error: File $datafilepath does not exist." 1>&2
+#	exit 1
+#fi
 
 $1 "${@:2}"
