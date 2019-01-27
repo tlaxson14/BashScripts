@@ -17,8 +17,12 @@ tempsumfile2="sumfile2$$"
 avgfile=$"tempavgfile$$"
 tempdatafilepath=$"tempdatafile$$"
 temptempfile=$"tempfile$$"
-tempaddfile=$"tempaddfile$"
-trap "rm -f $tempCol $tempRow $avgfile $datafilepath" EXIT INT HUP TERM 	# File cleanup maintenance 
+tempaddfile=$"tempaddfile$$"
+tempfile1=$"tempfile1$$"
+tempfile2=$"tempfile2$$"
+matrix1tempfile="mat1tempfile$$"
+matrix2tempfile="mat2tempfile$$"
+trap "rm -f $tempCol $tempRow $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
 
 # Dims function: Prints the dimensions of the matrix
 # as the number of rows, followed by a space, then the number
@@ -120,6 +124,7 @@ add() {
 	count=1
 
 	# Iterate through all array elements
+	# Source: https://stackoverflow.com/questions/17403498/iterate-over-two-arrays-simultaneously-in-bash
 	for ((i=0; i<${#numarray1[@]};++i))	
 	do
 		# Calculate resulting sum iteratively from arrays
@@ -143,7 +148,73 @@ add() {
 		fi
 	done
 }
+
+
+multiply() {
+
+	# Get rows and cols for matrix 1	
+	matrix1rows=$(wc -l < $matrix1tempfile)
+	matrix1nums=$(wc -w < $matrix1tempfile)
+	matrix1cols=$(( matrix1nums / matrix1rows ))
 	
+	# Get matrix 2 rows and cols
+	matrix2rows=$(wc -l < $matrix2tempfile)
+	matrix2nums=$(wc -w < $matrix2tempfile)
+	matrix2cols=$(( matrix2nums / matrix2rows ))
+	
+	# Determine rows and cols of product matrix
+	matrix3rows=$matrix1rows
+	matrix3cols=$matrix2cols
+
+	# Declare matrices
+	declare -a matrix1
+	declare -a matrix2
+	matrix1=( $(cat "$matrix1tempfile") )    
+	matrix2=( $(cat "$matrix2tempfile") )       
+	
+	
+	# Matrix multiplication logic 
+	count=1
+	for ((row=0; row<$matrix3rows; row++))
+	do
+		for ((col=0; col<$matrix3cols; col++))
+		do
+			product=0
+			for ((i=0; i<$matrix1cols; i++))
+
+			do
+				row1="$row"
+#				echo "row1=$row1"
+				col1="$i"
+#				echo "col1=$col1"
+				index1=$(( (row1 * matrix1cols) + col1 ))
+#				echo "index1=$index1"
+				row2="$i"
+#				echo "row2=$row2"
+				col2="$col"
+#				echo "col2=$col2"
+				index2=$(( (row2 * matrix2cols) + col2 ))
+#				echo "index2=$index2"
+				matrix1output=${matrix1[$index1]}
+				matrix2output=${matrix2[$index2]}
+#				echo "$matrix1output * $matrix2output"
+				subtot=$(( matrix1output * matrix2output ))
+				product=$(( product + subtot ))
+			done
+				# Format stdout of product matrix	
+				if [[ $count -lt $matrix3cols ]]
+				then
+					printf "%d\t" $product   #>> $tempRow
+					(( count++ ))
+				else
+					count=1
+					printf "%d\n" $product   #>> $tempRow
+				fi
+		done
+	done
+}
+
+
 
 # How the script handles piping stdout into stdin
 # and stdin directly as a command line argument 
@@ -159,6 +230,12 @@ then
 		echo "Error: Invalid number of arguments." 1>&2
 		exit 1
 	fi	
+	
+	if [[ ! -f $datafilepath ]]
+	then
+		echo "Error: File $datafilepath does not exist." 1>&2
+		exit 1
+	fi
 elif [[ "$1" == "add" ]] #|| [[ "$1" == "multiply" ]]
 then
 	if [[ "$#" != "3" ]]  
@@ -182,21 +259,41 @@ then
 			exit 1
 		fi
 	fi
-fi
-
-# If number of args is greater than 2 or the file doesn't exist
-# print error message to stderr, nothing to stdout and return 1
-# else print the number of rows and cols to stdout and return 0
-#if [ $# -gt 2 ] || [ $# -lt 1 ] 
-#then
-#	echo "Error: Improper argument count" 1>&2
-#	exit 1
-#fi
-
-if [[ ! -f $datafilepath ]]
+	if [[ ! -f $datafilepath ]]
+	then
+		echo "Error: File $datafilepath does not exist." 1>&2
+		exit 1
+	fi
+elif [[ $1 == "multiply" ]]
 then
-	echo "Error: File $datafilepath does not exist." 1>&2
-	exit 1
+	# Assign command line arguments to tempfiles
+	matrix1tempfile=$2
+	matrix2tempfile=$3
+	
+	# Get number of rows and cols for matrices 1 & 2
+	matrix1rows=$(wc -l < $matrix1tempfile)
+	matrix1nums=$(wc -w < $matrix1tempfile)
+	matrix1cols=$(( matrix1nums / matrix1rows ))
+	matrix2rows=$(wc -l < $matrix2tempfile)
+	matrix2nums=$(wc -w < $matrix2tempfile)
+	matrix2cols=$(( matrix2nums / matrix2rows ))
+	
+	# Check for valid argument count
+	if [[ "$#" != "3" ]]  
+	then
+		echo "Invalid argument count. Enter two arguments only." 1>&2
+		exit 1
+	# Check if matrix multiplication is allowed based on passed in arguments
+	elif [[ $matrix1cols != $matrix2rows ]]
+	then
+		echo "Invalid sized matrices. Double-check cols of matrix1 equals rows of matrix2" 1>&2
+		exit 1
+	# Check if files exist 
+	elif [[ ! -f $matrix1tempfile ]] || [[ ! -f $matrix2tempfile ]]
+	then
+		echo "File not found. Pass valid file argument with command." 1>&2
+		exit 1
+	fi
 fi
 
 $1 "${@:2}"
