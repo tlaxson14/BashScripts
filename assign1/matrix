@@ -1,124 +1,238 @@
 #!/bin/bash
-# Name: Travis Laxson
-# Date: Jan. 18 2019
-# Description: This shell script computes matrix operations 
-# including printing the dimensions, matrix transpositions,
-# mean vector calculation, addition of two matrices, and
-# multiplication of two matrices. 
+######################################################
+# Name: Travis Laxson | laxsont@oregonstate.edu
+# Date: 28 January 2019
+# File Description: 
+# This bash shell script computes and displays the
+# result of the following matrix operations:
+#	1. Dimensions
+#	2. Transpose
+#	3. Mean vector 
+#	4. Addition
+#	5. Multiplication 
+# Each matrix operation is a standalone function in
+# the script and may be invoked from the command line.
+######################################################
 
+# Temp files used in the script
 datafilepath="datafile$$"
 tempCol="tempcolfile$$"
-tempRow="temprowfile$$"
-tempRow1="temprowfile1$$"
-tempCol1="tempcolfile1$$"
-tempfile="tempsumfile$$"
-tempsumfile="sumfile$$"
-tempsumfile2="sumfile2$$"
+tempsumfile="tempsumfile$$"
 avgfile=$"tempavgfile$$"
-tempdatafilepath=$"tempdatafile$$"
-temptempfile=$"tempfile$$"
-tempaddfile=$"tempaddfile$$"
-tempfile1=$"tempfile1$$"
-tempfile2=$"tempfile2$$"
-matrix1tempfile="mat1tempfile$$"
-matrix2tempfile="mat2tempfile$$"
-trap "rm -f $tempCol $tempRow $avgfile" EXIT INT HUP TERM 	# File cleanup maintenance 
 
-# Dims function: Prints the dimensions of the matrix
-# as the number of rows, followed by a space, then the number
-# of columns (e.g. For a 5x6 matrix stdout will show '5 6')
+# File cleanup protocol and maintenanance 
+trap "rm -f $avgfile $tempCol $tempsumfile $datafilepath" EXIT INT HUP TERM 
+
+######################################################
+	# Dims Function Definition
+######################################################
+# Name: 
+#	dims
+
+# Description: 
+# 	This function will accept one file argument
+# 	from the command line containing an MxN matrix
+#	and print the matrix dimensions. It prints the
+#	dimensions MxN where M equals the number of
+#	rows and N equals the number of columns.
+
+# Inputs: 
+#	Argument 1 - matrix file 1 = MxN
+
+# Example command line input:
+#	"./matrix dims m1"
+#	where m1 = 2x4 matrix file
+
+# Output:
+# 	For an example 2x4 matrix the output
+# 	to the terminal would be as follows:
+#	2 4
+######################################################
 dims() {
-	rows=$(wc -l < $datafilepath)		# Get number of rows
-	numcount=$(wc -w < $datafilepath)	# Get total number count
-	cols=$(( numcount / rows ))		# Calculate number of columns
-	echo "$rows $cols"			# Display rows and cols
+	
+	# Get number of rows
+	rows=$(wc -l < $datafilepath)			
+	
+	# Get total number count from 
+	numcount=$(wc -w < $datafilepath)		
+
+	# Calculate number of columns
+	cols=$(( numcount / rows ))		
+
+	# Display rows and cols "rows cols"
+	echo "$rows $cols"			
 }
 
-# Transpose function: Reflects the elements of the matrix 
-# along the main diagonal. (Eg. An MxN matrix becomes NxM)
-# Values along the main diagonal will remain unchanged.
+######################################################
+	# Transpose Function Definition
+######################################################
+# Name: 
+#	transpose
+
+# Description: 
+# 	This function will accept one file argument
+# 	from the command line containing an MxN matrix
+#	and reflect the elements of the matrix along
+#	the main diagonal (i.e. An MxN becomes NxM).
+
+# Inputs: 
+#	Argument 1 - matrix file 1 = MxN
+
+# Example command line input:
+#	"./matrix transpose m1"
+#	where m1 = 2x4 matrix file
+
+# Output:
+# 	Transposed matrix where MxN becomes NxM
+######################################################
 transpose() {
-	i=0
-	#Make input row file
+	
+	# Initialize counter var
+	i=0		
+
+	# Read the input file argument into read to 
+	# read each line in a file
 	while read numberLine
 	do
+		# Initialize count for number of columns
 		colscount=0
+
+		# Iterate over each column and count number
+		# of columns
+		# Edit: Poor design choice
 		for each in $numberLine 
 		do			
 			colscount=$(( colscount + 1 ))
 		done
 		
+		# While counter is less than columns cut
+		# each field indicated by the value of 
+		# the counter var $i 
 		while [[ $i -lt $colscount ]]
 		do
-			(( i++ ))	
-			col=$(cut -f $i $datafilepath | tr '\n' '\t')
-			echo "${col%?}" >> $tempCol
+			# Increment counter - starts 1
+			(( i++ ))
+
+			# Assign new column var to cut column 
+			# piped and converted from newline to tabs			
+			newcol=$(cut -f $i $datafilepath | tr '\n' '\t')
+			
+			# Print the value minus the last character
+			echo "${newcol%?}" >> $tempCol
 		done
 	done < $datafilepath
-	cat < $tempCol
+
+	# Send data to stdout
+	cat < $tempCol		
 }
 
-# Mean function: Takes an MxN matrix input and returns an 1xN
-# row vector where the first element is the mean of column 1
-# and the second element is the mean of column 2, and so on.
-mean() {
-	#Get the number of columns
-	numcount=$( wc -w < $datafilepath)
-	#echo "Number of nos.= $numcount"
-	lincount=$( wc -l < $datafilepath)
-	#echo "Number of lines= $lincount"
-	colcount=$(( numcount / lincount))
-	#echo "Number of cols= $colcount"
+######################################################
+	# Mean Function Definition
+######################################################
+# Name: 
+#	mean
 
-	#initialize counter var
+# Description: 
+# 	This function will accept one file argument
+# 	from the command line containing an MxN matrix
+#	and calculate the mean for each column in the
+# 	matrix, respectively. Thus, the mean function
+#	returns a row vector containing the mean for
+#	each respective column. 
+
+# Inputs: 
+#	Argument 1 - matrix file 1 = MxN
+
+# Example command line input:
+#	"./matrix mean m1"
+#	where m1 = 2x4 matrix file
+
+# Output:
+# 	Row vector with mean from each column
+#	of the matrix file argument
+######################################################
+mean() {
+	# Get the number of columns
+	numcount=$( wc -w < $datafilepath)
+
+	# Get the number of lines	
+	lincount=$( wc -l < $datafilepath)
+	
+	# Calculate the columns
+	colcount=$(( numcount / lincount))
+
+	# Initialize counter var
 	i=1
 
+	# Iterate until i = number of columns from matrix file input
 	while [[ $i -le $colcount ]]
 	do 
-	
-		#initialize sum & avg for each column
+		# Initialize sum & avg for each column
 		sum=0
 		avg=0
 	
-		#cut columns and store into tempfile
+		# Cut columns and store into tempfile
 		cutcol=$(cut -f $i $datafilepath)
 		echo "$cutcol" > $tempCol
-		#cat $tempCol
 
-		#Read each numebr from the tempCol file and calculate sum
+		# Read each numebr from the tempCol file and calculate running sum total
 		while read number
 		do
 			sum=$(( sum + number )) 
-		#	echo "Sum=$sum"
 		done < $tempCol
 
-		#Calculate float average
+		# Calculate float average
 		avg=$(( ($sum + ($lincount/2) * (($sum>0)*2-1)) / $lincount ))
-		#echo "Avg=$avg"
 		
-		#Append avg to avgfile 
+		# Append avg to avgfile 
 		echo "$avg" >> $avgfile
 
 		#Tranform avgfile from cols to rows (replace all newlines with tabs)
 		display=$(cat $avgfile | tr '\n' '\t')
 
-		#Overwrite avgfile with transformed display minus last tab
+		#Overwrite avgfile with transformed display minus last tab character
 		echo "${display%?}" > $avgfile
 
-	#Increment i value
+	#Increment i value while i <= number of columns 
 	(( i++ ))
 
 	done
 
 	#Display avgfile to terminal
 	cat $avgfile	
-
 }
 
+######################################################
+	# Add Function Definition
+######################################################
+# Name: 
+#	add
+
+# Description: 
+# 	This function will accept two file
+# 	arguments (files with matrixes MxN and MxN)
+#	from the command line and validate the inputs
+# 	before adding the matrices and displaying
+# 	the product matrix, respectively. Matrix 
+# 	addition is only performed on matrices with
+# 	the same dimensions (i.e. equal number of rows
+# 	and columns). 
+
+# Inputs: 
+#	Argument 1 - matrix file 1 = MxN
+#	Argument 2 - matrix file 2 = MxN
+
+# Example command line input:
+#	"./matrix add m1 m1"
+#	where m1 = 2x4 matrix file
+
+# Output:
+# 	Resulting MxN sum matrix
+######################################################
 add() {
 	# Declare arrays
 	numarray1=( $(cat $datafilepath) )	# $Arg2 from command line
-	numarray2=( $(cat $tempfile) )		# $Arg3 from command line
+	numarray2=( $(cat $tempsumfile) )		# $Arg3 from command line
 	
 	# Initialize counter used to maintain array dimensions
 	count=1
@@ -149,7 +263,33 @@ add() {
 	done
 }
 
+######################################################
+	# Multiply Function Definition
+######################################################
+# Name: 
+#	multiply
 
+# Description: 
+# 	This function will accept two file
+# 	arguments (files with matrixes MxN and NxP)
+#	from the command line and validate the inputs
+# 	before multiplying the matrices and displaying
+# 	the product matrix, respectively. Matrix 
+# 	multiplication is performed using the dot
+# 	product of rows and columns from each matrix.    
+
+# Inputs: 
+#	Argument 1 - matrix file 1 = MxN
+#	Argument 2 - matrix file 2 = NxP
+
+# Example command line input:
+#	"./matrix multiply m1 m2"
+#	where m1 = 2x4 matrix file and
+#	 m2 = 4x2 matrix file
+
+# Output:
+# 	Resulting dot product matrix = MxP
+######################################################
 multiply() {
 
 	# Get rows and cols for matrix 1	
@@ -162,53 +302,49 @@ multiply() {
 	matrix2nums=$(wc -w < $matrix2tempfile)
 	matrix2cols=$(( matrix2nums / matrix2rows ))
 	
-	# Determine rows and cols of product matrix
+	# Assign rows and cols of product matrix
+	# Matrix multiplication rule
 	matrix3rows=$matrix1rows
 	matrix3cols=$matrix2cols
 
 	# Declare matrices
 	declare -a matrix1
 	declare -a matrix2
+
+	# Assign matrix 1 and matrix 2 variables from the temp files
 	matrix1=( $(cat "$matrix1tempfile") )    
 	matrix2=( $(cat "$matrix2tempfile") )       
 	
 	
-	# Matrix multiplication logic 
+	# Matrix multiplication logic - Initialize count to 1 for keeping track of resulting product matrix rows and cols
 	count=1
 	for ((row=0; row<$matrix3rows; row++))
 	do
 		for ((col=0; col<$matrix3cols; col++))
 		do
-			product=0
+			# Assign zero to matrix product for resetting product in subsequent multiplication steps
+			product=0		
 			for ((i=0; i<$matrix1cols; i++))
-
 			do
-				row1="$row"
-#				echo "row1=$row1"
-				col1="$i"
-#				echo "col1=$col1"
-				index1=$(( (row1 * matrix1cols) + col1 ))
-#				echo "index1=$index1"
-				row2="$i"
-#				echo "row2=$row2"
-				col2="$col"
-#				echo "col2=$col2"
-				index2=$(( (row2 * matrix2cols) + col2 ))
-#				echo "index2=$index2"
-				matrix1output=${matrix1[$index1]}
-				matrix2output=${matrix2[$index2]}
-#				echo "$matrix1output * $matrix2output"
-				subtot=$(( matrix1output * matrix2output ))
-				product=$(( product + subtot ))
+				row1="$row"					# Temp var for calculating index1 for matrix1
+				col1="$i"					# Temp var for calculating index1 for matrix1
+				index1=$(( (row1 * matrix1cols) + col1 ))	# Calculate index1 = row1 * cols in matrix1 + value of i 
+				row2="$i"					# Temp var for calculating index2 for matrix2
+				col2="$col"					# Temp car for calculating index2 for matrix2
+				index2=$(( (row2 * matrix2cols) + col2 ))	# Calculate index2 = row2 * cols in matrix2 + value of i
+				matrix1output=${matrix1[$index1]}		# Assign integer output of matrix1 array at index1 to var
+				matrix2output=${matrix2[$index2]}		# Assign integer output of matrix2 array at index2 to var
+				subtot=$(( matrix1output * matrix2output ))	# Initialize a subtotal for multiplying output from matrix1 & 2
+				product=$(( product + subtot ))			# Product variable = product sum total + subtotal
 			done
 				# Format stdout of product matrix	
 				if [[ $count -lt $matrix3cols ]]
 				then
-					printf "%d\t" $product   #>> $tempRow
-					(( count++ ))
+					printf "%d\t" $product
+					(( count++ ))		# Increment count to continue printing on same line
 				else
-					count=1
-					printf "%d\n" $product   #>> $tempRow
+					count=1			# Reset count for next row of output
+					printf "%d\n" $product
 				fi
 		done
 	done
@@ -220,57 +356,66 @@ multiply() {
 # and stdin directly as a command line argument 
 if [[ "$1" == "dims" ]] || [[ "$1" == "transpose" ]] || [[ "$1" == "mean" ]]
 then
+	# Execution logic for dims, transpose, and mean functions
 	if [[ $# -eq 1 ]]
 	then
-		cat > $datafilepath		#read in stdin to data file
+		cat > $datafilepath			# Read in stdin to data file
 	elif [[ $# -eq 2 ]]
 	then
-		datafilepath=$2
+		datafilepath=$2				# Assign Arg2 to tempfile
 	else
-		echo "Error: Invalid number of arguments." 1>&2
+		echo "Error: Invalid number of arguments." 1>&2		# Validate correct number of arguments
 		exit 1
 	fi	
 	
+	# Validate file exists or display error message
 	if [[ ! -f $datafilepath ]]
 	then
 		echo "Error: File $datafilepath does not exist." 1>&2
 		exit 1
 	fi
-elif [[ "$1" == "add" ]] #|| [[ "$1" == "multiply" ]]
+# Execute add function
+elif [[ "$1" == "add" ]]
 then
+	# Validate number of arguments passed to add function equals 3, else display error
 	if [[ "$#" != "3" ]]  
 	then
 		echo "Invalid argument count. Enter two arguments only." 1>&2
 		exit 1
 	else 
+		# Assign command line arguments to temp files
 		datafilepath=$2 
-		tempfile=$3
+		tempsumfile=$3
+
+		# Get number of rows and cols for each of the temp files passed to add function
 		datafilepathlines=$(wc -l < $datafilepath)
 		datafilepathwords=$(wc -w < $datafilepath)
-		datafilepathcols=$(( datafilepathwords / datafilepathlines ))
+		datafilepathcols=$(( datafilepathwords / datafilepathlines ))	
+		tempsumfilelines=$(wc -l < $tempsumfile)
+		tempsumfilenums=$(wc -w < $tempsumfile)
+		tempsumfilecols=$(( tempsumfilenums / tempsumfilelines ))
 		
-		tempfilepathlines=$(wc -l < $tempfile)
-		tempfilepathwords=$(wc -w < $tempfile)
-		tempfilepathcols=$(( tempfilepathwords / tempfilepathlines ))
-
-		if [[ $datafilepathlines != $tempfilepathlines ]] || [[ $datafilepathcols != $tempfilepathcols ]]
+		# Check for proper matrix dimensions 
+		if [[ $datafilepathlines != $tempsumfilelines ]] || [[ $datafilepathcols != $tempsumfilecols ]]
 		then
 			echo "Wrong sized matrices!" 1>&2
 			exit 1
 		fi
 	fi
+	# Display error message if file DNE
 	if [[ ! -f $datafilepath ]]
 	then
 		echo "Error: File $datafilepath does not exist." 1>&2
 		exit 1
 	fi
-elif [[ $1 == "multiply" ]]
+# Execute multiply function
+elif [[ $1 == "multiply" ]]	
 then
 	# Assign command line arguments to tempfiles
 	matrix1tempfile=$2
 	matrix2tempfile=$3
 	
-	# Get number of rows and cols for matrices 1 & 2
+	# Get number of rows and cols for matrices 1 & 2 passed to multiply function
 	matrix1rows=$(wc -l < $matrix1tempfile)
 	matrix1nums=$(wc -w < $matrix1tempfile)
 	matrix1cols=$(( matrix1nums / matrix1rows ))
@@ -296,4 +441,5 @@ then
 	fi
 fi
 
+# Execution statement to process command line arguments - source: Assignment 1 description
 $1 "${@:2}"
