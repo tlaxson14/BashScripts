@@ -230,9 +230,12 @@ mean() {
 # 	Resulting MxN sum matrix
 ######################################################
 add() {
-	# Declare arrays
-	numarray1=( $(cat $datafilepath) )	# $Arg2 from command line
-	numarray2=( $(cat $tempsumfile) )		# $Arg3 from command line
+	# Declare arrays from the command line args
+	# Arg1
+	numarray1=( $(cat $datafilepath) )
+	
+	# Arg2
+	numarray2=( $(cat $tempsumfile) )	
 	
 	# Initialize counter used to maintain array dimensions
 	count=1
@@ -318,53 +321,84 @@ multiply() {
 	
 	# Matrix multiplication logic - Initialize count to 1 for keeping track of resulting product matrix rows and cols
 	count=1
+
+	# Format the output to be equal to number of rows and cols of the product matrix 3
 	for ((row=0; row<$matrix3rows; row++))
 	do
 		for ((col=0; col<$matrix3cols; col++))
 		do
 			# Assign zero to matrix product for resetting product in subsequent multiplication steps
 			product=0		
+
+			# Iterate through each of the indices specifically to use for product calculation 
 			for ((i=0; i<$matrix1cols; i++))
 			do
-				row1="$row"					# Temp var for calculating index1 for matrix1
-				col1="$i"					# Temp var for calculating index1 for matrix1
-				index1=$(( (row1 * matrix1cols) + col1 ))	# Calculate index1 = row1 * cols in matrix1 + value of i 
-				row2="$i"					# Temp var for calculating index2 for matrix2
-				col2="$col"					# Temp car for calculating index2 for matrix2
-				index2=$(( (row2 * matrix2cols) + col2 ))	# Calculate index2 = row2 * cols in matrix2 + value of i
-				matrix1output=${matrix1[$index1]}		# Assign integer output of matrix1 array at index1 to var
-				matrix2output=${matrix2[$index2]}		# Assign integer output of matrix2 array at index2 to var
-				subtot=$(( matrix1output * matrix2output ))	# Initialize a subtotal for multiplying output from matrix1 & 2
-				product=$(( product + subtot ))			# Product variable = product sum total + subtotal
-			done
+				# Temp var for calculating index1 for matrix1
+				row1="$row"				
+
+				# Temp var for calculating index1 for matrix1
+				col1="$i"				
+
+				# Calculate index1 = row1 * cols in matrix1 + value of i 
+				index1=$(( (row1 * matrix1cols) + col1 ))
+
+				# Temp var for calculating index2 for matrix2
+				row2="$i"				
+
+				# Temp car for calculating index2 for matrix2
+				col2="$col"				
+
+				# Calculate index2 = row2 * cols in matrix2 + value of i
+				index2=$(( (row2 * matrix2cols) + col2 ))	
+
+				# Assign integer output of matrix1 array at index1 to var
+				matrix1output=${matrix1[$index1]}						
+
+				# Assign integer output of matrix2 array at index2 to var
+				matrix2output=${matrix2[$index2]}		
+				
+				 # Calculate the dot product
+				product=$(( product + (matrix1output * matrix2output) ))
+  			done
 				# Format stdout of product matrix	
 				if [[ $count -lt $matrix3cols ]]
 				then
 					printf "%d\t" $product
-					(( count++ ))		# Increment count to continue printing on same line
+					# Increment count to continue printing on same line
+					(( count++ ))					
 				else
-					count=1			# Reset count for next row of output
+					count=1			
+
+					# Reset count for next row of output
 					printf "%d\n" $product
 				fi
 		done
 	done
 }
 
-
-
+##################################################
+# Script execution statements
 # How the script handles piping stdout into stdin
 # and stdin directly as a command line argument 
+##################################################
+
+# Execute conditions for the functions dims, transpose, and mean
+# Since each function only requires one file argument their conditions
+# are the same
 if [[ "$1" == "dims" ]] || [[ "$1" == "transpose" ]] || [[ "$1" == "mean" ]]
 then
 	# Execution logic for dims, transpose, and mean functions
 	if [[ $# -eq 1 ]]
 	then
-		cat > $datafilepath			# Read in stdin to data file
+		# Read in stdin to datafile
+		cat > $datafilepath	
 	elif [[ $# -eq 2 ]]
 	then
-		datafilepath=$2				# Assign Arg2 to tempfile
+		# Assign Arg2 to datadilepath temp file
+		datafilepath=$2		
 	else
-		echo "Error: Invalid number of arguments." 1>&2		# Validate correct number of arguments
+		# Validate for incorrect number of args passed in command
+		echo "Error: Invalid number of arguments." 1>&2		
 		exit 1
 	fi	
 	
